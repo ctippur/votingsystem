@@ -1,6 +1,6 @@
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
 </head>
 <body>
   <table id="example">
@@ -10,8 +10,8 @@
    <tbody>
    </tbody>
   </table>
-  <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
-  <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
   <script>
      data1=[
   {
@@ -67,34 +67,20 @@
        console.log(tr.index());
   
         $(tr).find("td").each(function (cellnum) {
-                /*
-                if (cellnum === 0){
-                    value=$(this).html();
-                    redraw(value,"down");
-                }
-               */
                 if (cellnum === 0){
                     id=$(this).html();
-                    var data = {"MediaId": id, "updown":"up"}
-		
-		    /*
-		    $.post("https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/vote",
-			data,
-    			"application/json; charset=utf-8",
-    			function(data, status){
-                                console.log("Data: " + data + "\nStatus: " + status);
-        			alert("Data: " + data + "\nStatus: " + status);
-    		        });
- 		    */
+                    var data = {'MediaId': id, 'updown':'up'}
+		    dataStr=JSON.stringify(data);
 		    $.ajax({
         		url: 'https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/vote',
         		type: 'POST',
-        		data: data,  
+        		data: dataStr,  
 			contentType: 'application/json',
         		dataType: 'json',    // <-- add this here
-        		success: function(data) {
-            			equal(typeof data, 'object', 'success callback should return an object');
-            			start();
+        		success: function(dataRet) {
+                    		newvalue={'Up': dataRet.up, 'Down': dataRet.down}
+				console.log("Nre ret value " + dataRet.up);
+				refresh(newvalue,tr);
         		},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			        console.log(XMLHttpRequest);
@@ -102,33 +88,10 @@
   			}
     		    });
                 }
-                /*
-                if (cellnum === 4){
-                    var value=$(this).html();
-                    var arr = value.match(/if_thumbs_down_83035.png\">\s*(\d*)/);
-                    newdown=parseInt(arr[1])
-                    var arr = value.match(/if_thumbs_up_72054.png\">\s*(.*?)<br>/);
-                    newup=parseInt(arr[1]) + 1
-                    newvalue={'Up': newup, 'Down': newdown}
-                    
-                    //newstr='if_thumbs_down_83035.png">' + newdown;
-                    //newvalue=value.replace(/if_thumbs_down_83035.png\">\s*(\d*)/,newstr);
-                    rowarr.push(newvalue);
-                }else{
-                    rowarr.push($(this).html());
-                }
-                */
 		values += "cell"+cellnum+": "+$(this).html()+"\n";		
 	   }	
            
         );
-       
-        var oTable = $('#example').dataTable();
-        
-        console.log(rowarr);
-        //var temp = oTable.row(tr.index()).data();
-        oTable.fnUpdate( newvalue, tr.index(), 4, false );
-        //oTable.fnUpdate(rowarr,tr.index(),undefined,false);
      }
 
      function handle_downButton(event) {
@@ -141,42 +104,38 @@
        console.log(tr.index());
   
         $(tr).find("td").each(function (cellnum) {
-                /*
-                if (cellnum === 0){
-                    value=$(this).html();
-                    redraw(value,"down");
-                }
-               */
                 if (cellnum === 0){
                     id=$(this).html();
-                }
-                if (cellnum === 4){
-                    var value=$(this).html();
-                    var arr = value.match(/if_thumbs_down_83035.png\">\s*(\d*)/);
-                    newdown=parseInt(arr[1]) + 1
-                    var arr = value.match(/if_thumbs_up_72054.png\">\s*(.*?)<br>/);
-                    newup=parseInt(arr[1])
-                    newvalue={'Up': newup, 'Down': newdown}
-                    
-                    //newstr='if_thumbs_down_83035.png">' + newdown;
-                    //newvalue=value.replace(/if_thumbs_down_83035.png\">\s*(\d*)/,newstr);
-                    rowarr.push(newvalue);
-                }else{
-                    rowarr.push($(this).html());
+                    var data = {'MediaId': id, 'updown':'down'}
+		    dataStr=JSON.stringify(data);
+		    $.ajax({
+        		url: 'https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/vote',
+        		type: 'POST',
+        		data: dataStr,  
+			contentType: 'application/json',
+        		dataType: 'json',    // <-- add this here
+        		success: function(dataRet) {
+                    		newvalue={'Up': dataRet.up, 'Down': dataRet.down}
+				console.log("Nre ret value " + dataRet.up);
+				refresh(newvalue,tr);
+        		},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+			        console.log(XMLHttpRequest);
+     				alert(XMLHttpRequest);
+  			}
+    		    });
                 }
 		values += "cell"+cellnum+": "+$(this).html()+"\n";		
 	   }	
            
         );
-       
-        var oTable = $('#example').dataTable();
-        
-        console.log(rowarr);
-        //var temp = oTable.row(tr.index()).data();
-        oTable.fnUpdate( newvalue, tr.index(), 4, false );
-        //oTable.fnUpdate(rowarr,tr.index(),undefined,false);
      }
-     
+    
+     function refresh(newvalue,tr){
+	var oTable = $('#example').dataTable();
+	oTable.fnUpdate( newvalue, tr.index(), 4, false );
+     } 
+
      function redraw(id,type){
         var table = $("#example").dataTable({
             "bServerSide": true,
@@ -264,11 +223,17 @@
               }
               */
               "mRender": function(data, type, row){ 
-                 console.log(data);
+		 console.log(data);
+		 var up,down;
+		 if (typeof data === 'object'){
+                   up=data.Up;
+                   down=data.Down;
+		 }else{
+                   up=row.up;
+                   down=row.down;
+		 }
                  myid=row.Id;
-                 up=row.up;
-                 down=row.down;
-                 return '<img id="'+myid+'" class="upButton" src="if_thumbs_up_72054.png">   ' + up + '<br>' + '<img id="down" class="downButton" src="if_thumbs_down_83035.png">    ' + down;
+                 return '<img id="'+myid+'" class="upButton" src="if_thumbs_up_72054.png">' + up + '<br>' + '<img id="down" class="downButton" src="if_thumbs_down_83035.png">' + down;
               }
             }
            ]

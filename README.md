@@ -272,10 +272,11 @@ Deployment is broken into 2 parts due to time constraints:
       * terraform init
       * terraform get
       * terraform apply
-
 Please ensure that the bucket and region are specified properly.
    2. Deploying Lambda code and api gateway resources are done via cloudformation templates
       * Checkout code
       * cd ```<root folder>```/ 
       * sh build.sh
 
+## URL
+The project can be accessible via https://d29kx5yil4ozmg.cloudfront.net/index.html
