@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Voting system CFN template
+Outputs:
+  VotingSystemApi:
+    Description: URL for application
+    Export:
+      Name: VotingSystemApi
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/votingsystem
+Resources:
+  VotingSystemFunction:
+    Properties:
+      CodeUri: s3://votingsystem-tf/dd414825dd7dceefe81bf4907837d5a4
+      Events:
+        GetResource:
+          Properties:
+            Method: any
+            Path: /{proxy+}
+          Type: Api
+      Handler: com.rest.test.StreamLambdaHandler::handleRequest
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Runtime: java8
+      Timeout: 20
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

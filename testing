@@ -1,0 +1,14 @@
+
+if [ "$ENV" = 'aws' ]; then
+    endpoint='https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem'
+else
+    endpoint='http://localhost:8080'
+fi
+## Create media
+curl -v -X POST -H "Content-Type: application/json" -d @payload "${endpoint}/media" 
+
+## Query Media
+curl "${endpoint}/media" 
+
+## Post vote
+curl -v -X POST -H "Content-Type: application/json" -d @request.vote "${endpoint}/vote"

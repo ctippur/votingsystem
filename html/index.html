@@ -1,0 +1,278 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+</head>
+<body>
+  <table id="example">
+   <thead>
+    <tr><th class="Id">Id</th><th>Description</th><th>Type</th><th>Category</th><th>Vote Count</th></tr>
+   </thead>
+   <tbody>
+   </tbody>
+  </table>
+  <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+  <script>
+     data1=[
+  {
+    "Category": "Popular, Horror",
+    "Description": "When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.",
+    "Down": 15,
+    "Id": "Stranger Things",
+    "Type": "Movies",
+    "Up": 10
+  },
+  {
+    "Down": 1,
+    "Up": 11,
+    "category": "Popular, Horror",
+    "description": "When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.",
+    "id": "Stranger Things",
+    "type": "Movies"
+  }
+]; 
+
+     function ViewAction(row,action){
+        console.log("Hello World " + row);
+     }
+
+     function ViewAction(row){
+        console.log("Hello World " + id);
+     }
+
+     function ViewAction(row,action){
+        console.log(row);
+        var valup=row["Vote Count"]['Up'];
+        var valdown=row["Vote Count"]['Down'];
+        if (action === 'down'){
+           valdown++;
+        }else{
+           valup++;
+        }
+        row["Vote Count"]['Up']=valup;
+        row["Vote Count"]['Down']=valdown;
+        var oTable = $('#example').dataTable();
+        newtext='<img id="'+row.Id+'" onclick=ViewAction("'+row+'","up") src="if_thumbs_up_72054.png">   ' + row["Vote Count"]['Up'] + '<br>' + '<img id="'+row.Id+'" onclick=ViewAction("'+row+'","down") src="if_thumbs_down_83035.png">    ' + row["Vote Count"]['Down']
+        console.log(newtext)
+        //oTable.cell(row, 2).data(newtext).draw();
+        oTable.fnUpdate(newtext,0, 4 );
+     }
+
+     function handle_upButton(event) {
+       var values;
+       var newdown;
+       var newvalue=null;
+       var rowarr=[];
+       var tr = $(event.target).parent().parent();  
+       console.log(tr.index());
+  
+        $(tr).find("td").each(function (cellnum) {
+                /*
+                if (cellnum === 0){
+                    value=$(this).html();
+                    redraw(value,"down");
+                }
+               */
+                if (cellnum === 0){
+                    id=$(this).html();
+                    var data = {"MediaId": id, "updown":"up"}
+		
+		    /*
+		    $.post("https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/vote",
+			data,
+    			"application/json; charset=utf-8",
+    			function(data, status){
+                                console.log("Data: " + data + "\nStatus: " + status);
+        			alert("Data: " + data + "\nStatus: " + status);
+    		        });
+ 		    */
+		    $.ajax({
+        		url: 'https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/vote',
+        		type: 'POST',
+        		data: data,  
+			contentType: 'application/json',
+        		dataType: 'json',    // <-- add this here
+        		success: function(data) {
+            			equal(typeof data, 'object', 'success callback should return an object');
+            			start();
+        		},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+			        console.log(XMLHttpRequest);
+     				alert(XMLHttpRequest);
+  			}
+    		    });
+                }
+                /*
+                if (cellnum === 4){
+                    var value=$(this).html();
+                    var arr = value.match(/if_thumbs_down_83035.png\">\s*(\d*)/);
+                    newdown=parseInt(arr[1])
+                    var arr = value.match(/if_thumbs_up_72054.png\">\s*(.*?)<br>/);
+                    newup=parseInt(arr[1]) + 1
+                    newvalue={'Up': newup, 'Down': newdown}
+                    
+                    //newstr='if_thumbs_down_83035.png">' + newdown;
+                    //newvalue=value.replace(/if_thumbs_down_83035.png\">\s*(\d*)/,newstr);
+                    rowarr.push(newvalue);
+                }else{
+                    rowarr.push($(this).html());
+                }
+                */
+		values += "cell"+cellnum+": "+$(this).html()+"\n";		
+	   }	
+           
+        );
+       
+        var oTable = $('#example').dataTable();
+        
+        console.log(rowarr);
+        //var temp = oTable.row(tr.index()).data();
+        oTable.fnUpdate( newvalue, tr.index(), 4, false );
+        //oTable.fnUpdate(rowarr,tr.index(),undefined,false);
+     }
+
+     function handle_downButton(event) {
+       var values;
+       var newdown;
+       var newvalue=null;
+       var rowarr=[];
+       var tr = $(event.target).parent().parent();  
+       var id=null;
+       console.log(tr.index());
+  
+        $(tr).find("td").each(function (cellnum) {
+                /*
+                if (cellnum === 0){
+                    value=$(this).html();
+                    redraw(value,"down");
+                }
+               */
+                if (cellnum === 0){
+                    id=$(this).html();
+                }
+                if (cellnum === 4){
+                    var value=$(this).html();
+                    var arr = value.match(/if_thumbs_down_83035.png\">\s*(\d*)/);
+                    newdown=parseInt(arr[1]) + 1
+                    var arr = value.match(/if_thumbs_up_72054.png\">\s*(.*?)<br>/);
+                    newup=parseInt(arr[1])
+                    newvalue={'Up': newup, 'Down': newdown}
+                    
+                    //newstr='if_thumbs_down_83035.png">' + newdown;
+                    //newvalue=value.replace(/if_thumbs_down_83035.png\">\s*(\d*)/,newstr);
+                    rowarr.push(newvalue);
+                }else{
+                    rowarr.push($(this).html());
+                }
+		values += "cell"+cellnum+": "+$(this).html()+"\n";		
+	   }	
+           
+        );
+       
+        var oTable = $('#example').dataTable();
+        
+        console.log(rowarr);
+        //var temp = oTable.row(tr.index()).data();
+        oTable.fnUpdate( newvalue, tr.index(), 4, false );
+        //oTable.fnUpdate(rowarr,tr.index(),undefined,false);
+     }
+     
+     function redraw(id,type){
+        var table = $("#example").dataTable({
+            "bServerSide": true,
+            "sAjaxSource": "http://localhost:5000/current/vote",
+            paging: false,
+            searching: false,
+            "bRetrieve": true,
+            "bDestroy": true,
+            dataType: "jsonp",
+            "aoColumns": [{
+              "mData":"Id",
+              "sTitle": "Id"
+            },
+            {
+              "mData":"Description",
+              "sTitle": "Description"
+            },
+            {
+              "mData":"Type",
+              "sTitle": "Type"
+            },
+            {
+              "mData":"Category",
+              "sTitle": "Category"
+            },
+            {
+              "mData":"Vote Count",
+              "sTitle": "Vote Count",
+              /*
+              "mRender": function ( data, type, row )  {
+                  myid=row.Id;
+                  myrow=row;
+                  //return  '<a href="'+data.Up+'">' + "Up" + '</a>   ' + data.Up + '<br>' + '<a href="'+data.Down+'">' + "Down" + '</a>   ' + data.Down ;
+                  //return '<img id="myrow.Id" onclick=ViewAction(myrow,"up") src="if_thumbs_up_72054.png">   ' + data.Up + '<br>' + '<img id="myrow.Id" onclick=ViewAction(myrow,"down") src="if_thumbs_down_83035.png">    ' + data.Down;
+                  return '<img id="'+myid+'" onclick=redraw(myid,"up") src="if_thumbs_up_72054.png">   ' + data.Up + '<br>' + '<img id="'+myid+'" onclick=redraw(myrow,"down") src="if_thumbs_down_83035.png">    ' + data.Down;
+
+              }
+              */
+              "mRender": function(data, type, row){ 
+                 myid=row.Id
+                 return '<img id="'+myid+'" class="upButton" src="if_thumbs_up_72054.png">' + data.Up + '<br>' + '<img id="down" class="downButton" src="if_thumbs_down_83035.png">' + data.Down;
+              }
+            }
+           ]
+        }).on('click', '.upButton', handle_upButton).on('click', '.downButton', handle_downButton);
+     }
+    
+     var table = $("#example").dataTable({
+            "bServerSide": true,
+            //"sAjaxSource": "http://localhost:5000/current/media",
+            //"sAjaxSource": "http://localhost:8080/media",
+            "sAjaxSource": "https://020g16ftf7.execute-api.us-west-2.amazonaws.com/Prod/votingsystem/media",
+            dataType: "jsonp",
+            "type": "ANY",
+            paging: false,
+            "bRetrieve": true,
+            "bDestroy": true,
+            searching: false,
+            "aoColumns": [{
+              "mData":"id",
+              "sTitle": "Id"
+            },
+            {
+              "mData":"description",
+              "sTitle": "Description"
+            },
+            {
+              "mData":"type",
+              "sTitle": "Type"
+            },
+            {
+              "mData":"category",
+              "sTitle": "Category"
+            },
+            {
+              "mData":"up",
+              "sTitle": "Vote Count",
+              /*
+              "mRender": function ( data, type, row )  {
+                  myid=row.Id;
+                  myrow=row;
+                  //return  '<a href="'+data.Up+'">' + "Up" + '</a>   ' + data.Up + '<br>' + '<a href="'+data.Down+'">' + "Down" + '</a>   ' + data.Down ;
+                  return '<img id="myrow.Id" onclick=redraw(myid,"up") src="if_thumbs_up_72054.png">   ' + data.Up + '<br>' + '<img id="myrow.Id" onclick=redraw(myid,"down") src="if_thumbs_down_83035.png">    ' + data.Down;
+
+              }
+              */
+              "mRender": function(data, type, row){ 
+                 console.log(data);
+                 myid=row.Id;
+                 up=row.up;
+                 down=row.down;
+                 return '<img id="'+myid+'" class="upButton" src="if_thumbs_up_72054.png">   ' + up + '<br>' + '<img id="down" class="downButton" src="if_thumbs_down_83035.png">    ' + down;
+              }
+            }
+           ]
+     }).on('click', '.upButton', handle_upButton).on('click', '.downButton', handle_downButton);
+  </script>
+</body>
+</html>
