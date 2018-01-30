@@ -255,10 +255,10 @@ definitions:
 
 | Scenario | Testing status |
 |----------|:---------------:|
-| Empty media | Yes  |
-| Adding new media | Yes |
-| Add new vote to a media that has not been voted on | Yes |
-| Add vote to an exinsting media | Yes |
+| Empty media | Pass  |
+| Adding new media | Pass |
+| Add new vote to a media that has not been voted on | Pass |
+| Add vote to an exinsting media | Pass |
 
 In order to test api locally, compile the code using your favourite tool with "mvn clean install" as build options and invoke the embedded jar file using
 java --add-modules=java.xml.bind,java.activation -jar target/maven-archetype-quickstart-1.0-SNAPSHOT.jar 
