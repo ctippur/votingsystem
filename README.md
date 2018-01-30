@@ -254,6 +254,7 @@ definitions:
 # Testing
 
 | Scenario | Testing status |
+|----------|:---------------:|
 | Empty media | Yes  |
 | Adding new media | Yes |
 | Add new vote to a media that has not been voted on | Yes |
