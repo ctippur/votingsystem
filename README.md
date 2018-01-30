@@ -252,11 +252,17 @@ definitions:
    * Due to time constraints, implemented basic testing framewor.
 
 # Testing
+
 | Scenario | Testing status |
 | Empty media | Yes  |
 | Adding new media | Yes |
 | Add new vote to a media that has not been voted on | Yes |
 | Add vote to an exinsting media | Yes |
+
+In order to test api locally, compile the code using your favourite tool with "mvn clean install" as build options and invoke the embedded jar file using
+java --add-modules=java.xml.bind,java.activation -jar target/maven-archetype-quickstart-1.0-SNAPSHOT.jar 
+
+Remote testing can be done using testall script.
 
 # Deployment
 Deployment is broken into 2 parts due to time constraints:
